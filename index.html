@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUN-SEARCHERS // Terminal #04</title>
+    <title>SUNNY SEARCH // Terminal #04</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Marked.js for clean Markdown rendering when Gemini answers -->
@@ -151,14 +151,14 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <h1 class="font-retro text-2xl sm:text-3xl tracking-wider text-crt-green glow-green leading-none">
-                            SUN-SEARCHERS // TERMINAL #04
+                            SUNNY SEARCH // TERMINAL #04
                         </h1>
                         <span class="hidden md:inline-block text-[10px] uppercase tracking-widest px-2 py-0.5 rounded bg-crt-border/60 text-crt-dim border border-crt-border">
                             OS v19.84-B
                         </span>
                     </div>
                     <p class="text-[11px] text-crt-dim tracking-wide">
-                        DESK: CAROL_B // AGENCY: SUN-SEARCHERS // GEMINI-LINK: <span id="linkState" class="text-crt-amber">STANDBY</span>
+                        DESK: CAROL_B // AGENCY: SUNNY SEARCH // GEMINI-LINK: <span id="linkState" class="text-crt-amber">STANDBY</span>
                     </p>
                 </div>
             </div>
@@ -216,7 +216,7 @@
             <!-- Initial Boot / System Notice -->
             <div class="border border-crt-border bg-crt-panel/70 rounded-xl p-4 text-xs sm:text-sm space-y-2">
                 <div class="flex items-center justify-between text-crt-dim text-[11px] border-b border-crt-border/60 pb-1.5">
-                    <span>SYSTEM NOTICE // SUN-SEARCHERS PUBLIC DESK</span>
+                    <span>SYSTEM NOTICE // SUNNY SEARCH PUBLIC DESK</span>
                     <span>STATUS: RELUCTANT</span>
                 </div>
                 <p class="text-[11px] text-crt-dim italic">
@@ -224,15 +224,15 @@
                 </p>
             </div>
 
-            <!-- Initial Greeting Message from Carol -->
+            <!-- Initial Greeting Message from Carol B -->
             <div class="flex justify-start">
                 <div class="max-w-[88%] sm:max-w-[80%] bg-crt-panel border border-crt-border rounded-xl rounded-tl-none px-4 py-3.5 shadow-md space-y-1.5">
                     <div class="flex items-center justify-between gap-4 text-[10px] text-crt-green/80 border-b border-crt-border/60 pb-1">
-                        <span>CLERK CAROL // SUN-SEARCHERS DESK</span>
+                        <span>CLERK CAROL B // SUNNY SEARCH DESK</span>
                         <span>ONLINE</span>
                     </div>
                     <p class="text-sm text-gray-100 leading-relaxed">
-                        Hello, welcome to Sun-Searchers, my name is Carol. Can I help you?
+                        Hello, welcome to Sunny Search, my name is Carol B. Can I help you?
                     </p>
                 </div>
             </div>
@@ -241,7 +241,7 @@
         <!-- Quick Retry / Nudge Banner (Appears after a "Computer says no" rejection) -->
         <div id="nudgeBar" class="hidden bg-crt-panel/90 border-t border-crt-border px-4 py-2 flex items-center justify-between gap-2 shrink-0">
             <span class="text-xs text-crt-dim truncate">
-                Petition denied. Keep pleading until Carol gives in?
+                Petition denied. Keep pleading until Carol B gives in?
             </span>
             <button id="retryLastBtn" class="px-3 py-1.5 rounded-lg bg-crt-amber/15 border border-crt-amber/50 text-crt-amber hover:bg-crt-amber/25 text-xs font-semibold transition-all whitespace-nowrap flex items-center gap-1.5">
                 <span>↻ Ask Again</span>
@@ -641,7 +641,7 @@
             wrapper.innerHTML = `
                 <div class="bg-crt-panel border border-crt-border rounded-xl rounded-tl-none px-4 py-3 text-xs text-crt-amber flex items-center gap-3">
                     <span class="inline-block w-2 h-2 rounded-full bg-crt-amber animate-ping"></span>
-                    <span id="processingStatusText">Carol is typing reluctantly into the green screen...</span>
+                    <span id="processingStatusText">Carol B is typing reluctantly into the green screen...</span>
                 </div>
             `;
             dom.chatContainer.appendChild(wrapper);
@@ -656,7 +656,7 @@
             wrapper.innerHTML = `
                 <div class="max-w-[88%] sm:max-w-[80%] bg-[#1c1212] border border-crt-red/50 rounded-xl rounded-tl-none px-4 py-3.5 shadow-lg space-y-2">
                     <div class="flex items-center justify-between gap-4 text-[10px] text-crt-red/80 border-b border-crt-red/25 pb-1">
-                        <span>CLERK CAROL // DESK #04</span>
+                        <span>CLERK CAROL B // DESK #04</span>
                         <span>REJECTION #${state.consecutiveRejections}</span>
                     </div>
                     <div class="flex items-center gap-3">
@@ -729,7 +729,7 @@
                 contents,
                 systemInstruction: {
                     parts: [{
-                        text: "You are Carol from Sun-Searchers, a reluctant, slightly deadpan bureaucratic AI clerk who finally decided to say 'yes' and help the user. Provide a genuinely helpful, accurate, and clear answer to their request, while keeping a subtle touch of dry clerk personality at the start or end. Use clean Markdown formatting when helpful."
+                        text: "You are Carol B from Sunny Search, a reluctant, slightly deadpan bureaucratic AI clerk who finally decided to say 'yes' and help the user. Provide a genuinely helpful, accurate, and clear answer to their request, while keeping a subtle touch of dry clerk personality at the start or end. Use clean Markdown formatting when helpful."
                     }]
                 }
             };
@@ -795,7 +795,7 @@
 
             const processingBubble = appendProcessingBubble();
 
-            // Simulate Carol slowly typing with one finger on the keyboard
+            // Simulate Carol B slowly typing with one finger on the keyboard
             const typingTicks = 4 + Math.floor(Math.random() * 4);
             for (let i = 0; i < typingTicks; i++) {
                 sfx.playKeystroke(i * 15);
@@ -817,7 +817,7 @@
                 const excuse = getRandomExcuse();
                 appendRejectionCard(excuse);
 
-                // Play Carol's dry double-cough slightly after the rejection buzz
+                // Play Carol B's dry double-cough slightly after the rejection buzz
                 setTimeout(() => {
                     sfx.playCoughSound();
                 }, 420);
@@ -844,7 +844,7 @@
                     outputSlot.innerHTML = `
                         <div class="p-3 rounded-lg bg-crt-red/10 border border-crt-red/40 text-crt-red text-xs space-y-1">
                             <p class="font-bold">⚠️ GEMINI UPLINK ERROR</p>
-                            <p class="text-gray-300">Carol finally said yes, but the server uplink failed (${escapeHtml(error.message)}).</p>
+                            <p class="text-gray-300">Carol B finally said yes, but the server uplink failed (${escapeHtml(error.message)}).</p>
                             <p class="text-[11px] text-crt-dim">Tip: Make sure <code>api/chat.js</code> is uploaded and <code>GEMINI_API_KEY</code> is set in your Vercel Environment Variables.</p>
                         </div>
                     `;
@@ -892,7 +892,7 @@
             }
         });
 
-        // Change Carol's stubbornness level
+        // Change Carol B's stubbornness level
         dom.stubbornnessSelect.addEventListener('change', (e) => {
             state.stubbornness = e.target.value;
             state.targetRejections = Math.max(
@@ -910,7 +910,7 @@
             if (sfx.enabled) sfx.playKeystroke(120);
         });
 
-        // Reset session back to Carol's initial greeting
+        // Reset session back to Carol B's initial greeting
         dom.resetBtn.addEventListener('click', () => {
             if (state.isProcessing) return;
             state.consecutiveRejections = 0;
@@ -924,7 +924,7 @@
             dom.chatContainer.innerHTML = `
                 <div class="border border-crt-border bg-crt-panel/70 rounded-xl p-4 text-xs sm:text-sm space-y-2">
                     <div class="flex items-center justify-between text-crt-dim text-[11px] border-b border-crt-border/60 pb-1.5">
-                        <span>SYSTEM RESET // SUN-SEARCHERS PUBLIC DESK</span>
+                        <span>SYSTEM RESET // SUNNY SEARCH PUBLIC DESK</span>
                         <span>STATUS: RELUCTANT</span>
                     </div>
                     <p class="text-[11px] text-crt-dim italic">
@@ -934,11 +934,11 @@
                 <div class="flex justify-start">
                     <div class="max-w-[88%] sm:max-w-[80%] bg-crt-panel border border-crt-border rounded-xl rounded-tl-none px-4 py-3.5 shadow-md space-y-1.5">
                         <div class="flex items-center justify-between gap-4 text-[10px] text-crt-green/80 border-b border-crt-border/60 pb-1">
-                            <span>CLERK CAROL // SUN-SEARCHERS DESK</span>
+                            <span>CLERK CAROL B // SUNNY SEARCH DESK</span>
                             <span>ONLINE</span>
                         </div>
                         <p class="text-sm text-gray-100 leading-relaxed">
-                            Hello, welcome to Sun-Searchers, my name is Carol. Can I help you?
+                            Hello, welcome to Sunny Search, my name is Carol B. Can I help you?
                         </p>
                     </div>
                 </div>

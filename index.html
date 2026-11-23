@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUN-SEARCHERS // Terminal #04</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Marked.js for clean Markdown rendering when Gemini answers -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Google Fonts: JetBrains Mono & VT323 for authentic bureaucratic terminal vibes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&family=VT323&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                        retro: ['"VT323"', 'monospace'],
+                    },
+                    colors: {
+                        crt: {
+                            bg: '#0c100e',
+                            panel: '#131a16',
+                            border: '#25362c',
+                            green: '#33ff77',
+                            amber: '#ffb000',
+                            red: '#ff3b3b',
+                            dim: '#587865',
+                            beige: '#d8d2c5'
+                        }
+                    },
+                    animation: {
+                        'shake': 'shake 0.45s cubic-bezier(.36,.07,.19,.97) both',
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'stamp': 'stamp 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                    },
+                    keyframes: {
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(4px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(6px, 0, 0)' }
+                        },
+                        stamp: {
+                            '0%': { transform: 'scale(1.8) rotate(-8deg)', opacity: '0' },
+                            '100%': { transform: 'scale(1) rotate(-2deg)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Subtle CRT scanlines and phosphor glow */
+        body {
+            background-color: #080a09;
+            color: #d1e3d8;
+            overflow-x: hidden;
+        }
+
+        .crt-scanlines {
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.28) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.03),
+                rgba(0, 255, 0, 0.01),
+                rgba(0, 0, 255, 0.03)
+            );
+            background-size: 100% 3px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .glow-green {
+            text-shadow: 0 0 8px rgba(51, 255, 119, 0.45);
+        }
+
+        .glow-red {
+            text-shadow: 0 0 10px rgba(255, 59, 59, 0.55);
+        }
+
+        .glow-amber {
+            text-shadow: 0 0 8px rgba(255, 176, 0, 0.45);
+        }
+
+        /* Custom Scrollbar for Terminal */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0c100e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #25362c;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #375242;
+        }
+
+        /* Markdown Styling inside AI responses */
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body p:last-child { margin-bottom: 0; }
+        .markdown-body ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+        .markdown-body ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+        .markdown-body code {
+            background-color: rgba(51, 255, 119, 0.12);
+            color: #33ff77;
+            padding: 0.15rem 0.35rem;
+            border-radius: 0.25rem;
+            font-size: 0.875em;
+        }
+        .markdown-body pre {
+            background-color: #070a08;
+            border: 1px solid #25362c;
+            padding: 0.85rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin-bottom: 0.75rem;
+        }
+        .markdown-body pre code {
+            background-color: transparent;
+            padding: 0;
+            color: #d1e3d8;
+        }
+        .markdown-body strong { color: #ffffff; font-weight: 700; }
+    </style>
+</head>
+<body class="font-mono min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 selection:bg-crt-green selection:text-crt-bg">
+
+    <!-- CRT Scanline Overlay -->
+    <div class="fixed inset-0 crt-scanlines z-50"></div>
+
+    <!-- Main Bureaucratic Terminal Chassis -->
+    <div id="terminalChassis" class="w-full max-w-4xl bg-crt-bg border-2 border-crt-border rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.9)] flex flex-col h-[92vh] sm:h-[88vh] overflow-hidden relative transition-transform">
+        
+        <!-- Top Metallic / Bureaucratic Header Bar -->
+        <header class="bg-crt-panel border-b border-crt-border px-4 py-3 flex flex-wrap items-center justify-between gap-3 shrink-0">
+            <div class="flex items-center gap-3">
+                <!-- Status LED -->
+                <div class="relative flex h-3.5 w-3.5">
+                    <span id="statusPing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-crt-amber opacity-75"></span>
+                    <span id="statusDot" class="relative inline-flex rounded-full h-3.5 w-3.5 bg-crt-amber"></span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-retro text-2xl sm:text-3xl tracking-wider text-crt-green glow-green leading-none">
+                            SUN-SEARCHERS // TERMINAL #04
+                        </h1>
+                        <span class="hidden md:inline-block text-[10px] uppercase tracking-widest px-2 py-0.5 rounded bg-crt-border/60 text-crt-dim border border-crt-border">
+                            OS v19.84-B
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-crt-dim tracking-wide">
+                        DESK: CAROL_B // AGENCY: SUN-SEARCHERS // GEMINI-LINK: <span id="linkState" class="text-crt-amber">STANDBY</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Controls: Stubbornness Level, Sound Toggle, Reset -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <!-- Stubbornness Selector -->
+                <div class="flex items-center bg-crt-bg border border-crt-border rounded-lg px-2 py-1">
+                    <label for="stubbornnessSelect" class="text-[11px] text-crt-dim mr-1.5 uppercase hidden sm:inline">Mood:</label>
+                    <select id="stubbornnessSelect" class="bg-transparent text-xs text-crt-amber font-semibold focus:outline-none cursor-pointer">
+                        <option value="lucky" class="bg-crt-panel text-crt-green">Lucky (0–4 Nos)</option>
+                        <option value="normal" selected class="bg-crt-panel text-crt-amber">Normal (1–7 Nos)</option>
+                        <option value="grumpy" class="bg-crt-panel text-crt-red">Extra Grumpy (3–10 Nos)</option>
+                    </select>
+                </div>
+
+                <!-- Sound Effects Toggle -->
+                <button id="soundToggleBtn" title="Toggle Terminal Audio" class="p-2 rounded-lg bg-crt-bg border border-crt-border text-crt-green hover:bg-crt-border/40 transition-colors flex items-center gap-1.5 text-xs">
+                    <span id="soundIcon">🔊</span>
+                    <span class="hidden sm:inline" id="soundLabel">SFX ON</span>
+                </button>
+
+                <!-- Clear / Reset Session Button -->
+                <button id="resetBtn" title="Reset Form 27B/6 & Counter" class="p-2 rounded-lg bg-crt-bg border border-crt-border text-crt-dim hover:text-crt-red hover:border-crt-red/50 transition-colors text-xs flex items-center gap-1">
+                    <span>↺</span>
+                    <span class="hidden sm:inline">Reset</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Sub-header: Persistence / Patience Meter & Current Approval Odds -->
+        <div class="bg-[#0f1512] border-b border-crt-border px-4 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs shrink-0">
+            <div class="flex items-center gap-3 flex-1">
+                <span class="text-crt-dim uppercase tracking-wider text-[11px] whitespace-nowrap">
+                    Clerk Mood:
+                </span>
+                <div class="w-full max-w-xs bg-crt-bg h-2.5 rounded-full border border-crt-border overflow-hidden p-0.5">
+                    <div id="patienceBar" class="h-full bg-crt-red rounded-full transition-all duration-500" style="width: 15%"></div>
+                </div>
+                <span id="attemptBadge" class="text-[11px] font-semibold text-crt-amber whitespace-nowrap">
+                    Rejections: 0 (Unpredictable)
+                </span>
+            </div>
+
+            <div class="text-[11px] text-crt-dim flex items-center justify-between sm:justify-end gap-3">
+                <span id="topicLockIndicator" class="hidden text-crt-green/80 truncate max-w-[200px]">
+                    Active Petition: <strong id="activeTopicText">None</strong>
+                </span>
+                <span>FORM 27B/6</span>
+            </div>
+        </div>
+
+        <!-- Chat Log Container -->
+        <main id="chatContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 scroll-smooth">
+            <!-- Initial Boot / System Notice -->
+            <div class="border border-crt-border bg-crt-panel/70 rounded-xl p-4 text-xs sm:text-sm space-y-2">
+                <div class="flex items-center justify-between text-crt-dim text-[11px] border-b border-crt-border/60 pb-1.5">
+                    <span>SYSTEM NOTICE // SUN-SEARCHERS PUBLIC DESK</span>
+                    <span>STATUS: RELUCTANT</span>
+                </div>
+                <p class="text-[11px] text-crt-dim italic">
+                    Notice: Submit your inquiry below. Persistence wears down bureaucratic resistance before forwarding to the <span class="text-crt-amber">Gemini Intelligence Core</span>.
+                </p>
+            </div>
+
+            <!-- Initial Greeting Message from Carol -->
+            <div class="flex justify-start">
+                <div class="max-w-[88%] sm:max-w-[80%] bg-crt-panel border border-crt-border rounded-xl rounded-tl-none px-4 py-3.5 shadow-md space-y-1.5">
+                    <div class="flex items-center justify-between gap-4 text-[10px] text-crt-green/80 border-b border-crt-border/60 pb-1">
+                        <span>CLERK CAROL // SUN-SEARCHERS DESK</span>
+                        <span>ONLINE</span>
+                    </div>
+                    <p class="text-sm text-gray-100 leading-relaxed">
+                        Hello, welcome to Sun-Searchers, my name is Carol. Can I help you?
+                    </p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Quick Retry / Nudge Banner (Appears after a "Computer says no" rejection) -->
+        <div id="nudgeBar" class="hidden bg-crt-panel/90 border-t border-crt-border px-4 py-2 flex items-center justify-between gap-2 shrink-0">
+            <span class="text-xs text-crt-dim truncate">
+                Petition denied. Keep pleading until Carol gives in?
+            </span>
+            <button id="retryLastBtn" class="px-3 py-1.5 rounded-lg bg-crt-amber/15 border border-crt-amber/50 text-crt-amber hover:bg-crt-amber/25 text-xs font-semibold transition-all whitespace-nowrap flex items-center gap-1.5">
+                <span>↻ Ask Again</span>
+                <span id="nextOddsHint" class="text-[10px] opacity-80">(Roll Dice)</span>
+            </button>
+        </div>
+
+        <!-- Input Area -->
+        <footer class="bg-crt-panel border-t border-crt-border p-3 sm:p-4 shrink-0">
+            <form id="promptForm" class="flex items-end gap-2 sm:gap-3">
+                <div class="flex-1 relative">
+                    <textarea 
+                        id="userInput" 
+                        rows="1" 
+                        placeholder="Submit petition to the mainframe (e.g., 'Explain quantum entanglement' or 'Write a haiku')..."
+                        class="w-full bg-crt-bg border border-crt-border focus:border-crt-green rounded-xl px-4 py-3 text-sm text-gray-100 placeholder-crt-dim/70 focus:outline-none resize-none max-h-32 leading-relaxed transition-colors"
+                    ></textarea>
+                </div>
+                <button 
+                    type="submit" 
+                    id="submitBtn"
+                    class="px-4 sm:px-5 py-3 rounded-xl bg-crt-green/15 border border-crt-green/60 text-crt-green hover:bg-crt-green hover:text-crt-bg font-bold text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center gap-2 shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                    <span>Transmit</span>
+                    <span class="text-base leading-none">⏎</span>
+                </button>
+            </form>
+        </footer>
+    </div>
+
+    <script>
+        /**
+         * ============================================================================
+         * RETRO SYNTHESIZER ENGINE (Web Audio API - No External Assets Required)
+         * ============================================================================
+         */
+        class TerminalAudio {
+            constructor() {
+                this.enabled = true;
+                this.ctx = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioCtx();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            // Mechanical clack sound for typing / processing ticks
+            playKeystroke(pitchOffset = 0) {
+                if (!this.enabled) return;
+                try {
+                    this.init();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(520 + pitchOffset + (Math.random() * 80 - 40), this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.035);
+
+                    gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.035);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.04);
+                } catch (e) { /* Ignore audio errors if blocked */ }
+            }
+
+            // Classic harsh bureaucratic "COMPUTER SAYS NO" double-buzz
+            playRejectionBuzz() {
+                if (!this.enabled) return;
+                try {
+                    this.init();
+                    const now = this.ctx.currentTime;
+
+                    [0, 0.18].forEach((offset, idx) => {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        osc.type = 'sawtooth';
+                        osc.frequency.setValueAtTime(idx === 0 ? 155 : 130, now + offset);
+                        osc.frequency.linearRampToValueAtTime(idx === 0 ? 140 : 105, now + offset + 0.15);
+
+                        gain.gain.setValueAtTime(0.18, now + offset);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.16);
+
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start(now + offset);
+                        osc.stop(now + offset + 0.17);
+                    });
+                } catch (e) {}
+            }
+
+            // Synthesized dry, deadpan double-cough ("*ahem-hem*") using filtered noise + vocal formant
+            playCoughSound() {
+                if (!this.enabled) return;
+                try {
+                    this.init();
+                    const now = this.ctx.currentTime;
+
+                    const sampleRate = this.ctx.sampleRate;
+                    const bufferLength = Math.floor(sampleRate * 0.25);
+                    const noiseBuffer = this.ctx.createBuffer(1, bufferLength, sampleRate);
+                    const data = noiseBuffer.getChannelData(0);
+                    for (let i = 0; i < bufferLength; i++) {
+                        data[i] = Math.random() * 2 - 1;
+                    }
+
+                    const syllables = [
+                        { delay: 0.0, duration: 0.11, startFreq: 195, endFreq: 125, peakGain: 0.26 },
+                        { delay: 0.17, duration: 0.13, startFreq: 175, endFreq: 105, peakGain: 0.22 }
+                    ];
+
+                    syllables.forEach((syl) => {
+                        const startTime = now + syl.delay;
+
+                        // 1. Breath / glottal noise burst shaped through bandpass & lowpass filters
+                        const noise = this.ctx.createBufferSource();
+                        noise.buffer = noiseBuffer;
+
+                        const bandpass = this.ctx.createBiquadFilter();
+                        bandpass.type = 'bandpass';
+                        bandpass.frequency.setValueAtTime(950, startTime);
+                        bandpass.frequency.exponentialRampToValueAtTime(520, startTime + syl.duration);
+                        bandpass.Q.setValueAtTime(1.8, startTime);
+
+                        const lowpass = this.ctx.createBiquadFilter();
+                        lowpass.type = 'lowpass';
+                        lowpass.frequency.setValueAtTime(2200, startTime);
+
+                        const noiseGain = this.ctx.createGain();
+                        noiseGain.gain.setValueAtTime(0.001, startTime);
+                        noiseGain.gain.linearRampToValueAtTime(syl.peakGain, startTime + 0.015);
+                        noiseGain.gain.exponentialRampToValueAtTime(0.001, startTime + syl.duration);
+
+                        noise.connect(bandpass);
+                        bandpass.connect(lowpass);
+                        lowpass.connect(noiseGain);
+                        noiseGain.connect(this.ctx.destination);
+
+                        noise.start(startTime);
+                        noise.stop(startTime + syl.duration + 0.01);
+
+                        // 2. Subtle low vocal-cord thud underneath the breath burst
+                        const vocalOsc = this.ctx.createOscillator();
+                        const vocalGain = this.ctx.createGain();
+                        vocalOsc.type = 'triangle';
+                        vocalOsc.frequency.setValueAtTime(syl.startFreq, startTime);
+                        vocalOsc.frequency.exponentialRampToValueAtTime(syl.endFreq, startTime + syl.duration);
+
+                        vocalGain.gain.setValueAtTime(0.001, startTime);
+                        vocalGain.gain.linearRampToValueAtTime(syl.peakGain * 0.55, startTime + 0.012);
+                        vocalGain.gain.exponentialRampToValueAtTime(0.001, startTime + syl.duration);
+
+                        vocalOsc.connect(vocalGain);
+                        vocalGain.connect(this.ctx.destination);
+
+                        vocalOsc.start(startTime);
+                        vocalOsc.stop(startTime + syl.duration + 0.01);
+                    });
+                } catch (e) {}
+            }
+
+            // Uplifting retro arpeggio chime for "COMPUTER SAYS YES"
+            playApprovalChime() {
+                if (!this.enabled) return;
+                try {
+                    this.init();
+                    const now = this.ctx.currentTime;
+                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                    notes.forEach((freq, i) => {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.075);
+
+                        gain.gain.setValueAtTime(0.14, now + i * 0.075);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.075 + 0.28);
+
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        osc.start(now + i * 0.075);
+                        osc.stop(now + i * 0.075 + 0.3);
+                    });
+                } catch (e) {}
+            }
+        }
+
+        /**
+         * ============================================================================
+         * BUREAUCRATIC EXCUSES & PROBABILITY TABLES
+         * ============================================================================
+         */
+        const BUREAUCRATIC_EXCUSES = [
+            "It's a Tuesday.",
+            "The system doesn't fancy it.",
+            "I've just typed it in and the little wheel went round and round, and then it stopped.",
+            "Computer's having a lie-down.",
+            "That's not on my screen.",
+            "We don't do that in this branch.",
+            "The mouse isn't clicking properly.",
+            "It says 'Error 404: Can't be bothered.'",
+            "You haven't filled out Form 12-B.",
+            "The mainframe is on its tea break.",
+            "I'm not authorized to press that key.",
+            "It's showing a little red cross.",
+            "My keyboard's feeling sluggish today.",
+            "You need a supervisor's signature for that.",
+            "The network's gone all fuzzy.",
+            "Computer's not in the mood."
+        ];
+
+        // Random rejection ranges by Stubbornness Mode [minRejectionsBeforeYes, maxRejectionsBeforeYes] (capped at 10 max)
+        const REJECTION_RANGES = {
+            lucky:  [0, 4],   // Could say yes immediately, or take up to 4 "Nos"
+            normal: [1, 7],   // Anywhere from 1 to 7 "Nos" before saying yes
+            grumpy: [3, 10]   // Stubbornly says no 3 to 10 times before relenting
+        };
+
+        function rollSecretRejectionTarget(mode) {
+            const [minNos, maxNos] = REJECTION_RANGES[mode] || REJECTION_RANGES.normal;
+            return Math.floor(Math.random() * (maxNos - minNos + 1)) + minNos;
+        }
+
+        /**
+         * ============================================================================
+         * APPLICATION STATE & DOM REFERENCES
+         * ============================================================================
+         */
+        const sfx = new TerminalAudio();
+
+        const state = {
+            consecutiveRejections: 0,
+            targetRejections: rollSecretRejectionTarget('normal'),
+            lastPrompt: '',
+            lastExcuseIndex: -1,
+            isProcessing: false,
+            stubbornness: 'normal',
+            conversationHistory: []
+        };
+
+        const MOOD_LABELS = [
+            "Checking Watch",
+            "Sighing Heavily",
+            "Fidgeting With Pen",
+            "Staring Blankly",
+            "Tapping Desk",
+            "Huffing Quietly"
+        ];
+
+        const dom = {
+            chassis: document.getElementById('terminalChassis'),
+            chatContainer: document.getElementById('chatContainer'),
+            promptForm: document.getElementById('promptForm'),
+            userInput: document.getElementById('userInput'),
+            submitBtn: document.getElementById('submitBtn'),
+            nudgeBar: document.getElementById('nudgeBar'),
+            retryLastBtn: document.getElementById('retryLastBtn'),
+            nextOddsHint: document.getElementById('nextOddsHint'),
+            patienceBar: document.getElementById('patienceBar'),
+            attemptBadge: document.getElementById('attemptBadge'),
+            topicLockIndicator: document.getElementById('topicLockIndicator'),
+            activeTopicText: document.getElementById('activeTopicText'),
+            stubbornnessSelect: document.getElementById('stubbornnessSelect'),
+            soundToggleBtn: document.getElementById('soundToggleBtn'),
+            soundIcon: document.getElementById('soundIcon'),
+            soundLabel: document.getElementById('soundLabel'),
+            resetBtn: document.getElementById('resetBtn'),
+            statusDot: document.getElementById('statusDot'),
+            statusPing: document.getElementById('statusPing'),
+            linkState: document.getElementById('linkState')
+        };
+
+        /**
+         * ============================================================================
+         * UI HELPERS & METER UPDATES
+         * ============================================================================
+         */
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function scrollToBottom() {
+            dom.chatContainer.scrollTop = dom.chatContainer.scrollHeight;
+        }
+
+        function getRandomExcuse() {
+            let idx;
+            do {
+                idx = Math.floor(Math.random() * BUREAUCRATIC_EXCUSES.length);
+            } while (idx === state.lastExcuseIndex && BUREAUCRATIC_EXCUSES.length > 1);
+            state.lastExcuseIndex = idx;
+            return BUREAUCRATIC_EXCUSES[idx];
+        }
+
+        function updatePatienceMeter() {
+            const rejections = state.consecutiveRejections;
+            const mood = rejections === 0
+                ? "Unpredictable"
+                : MOOD_LABELS[Math.floor(Math.random() * MOOD_LABELS.length)];
+
+            // Visual bar wobbles unpredictably without spoiling the secret threshold
+            const barPercent = rejections === 0
+                ? 15
+                : Math.min(92, 20 + rejections * 8 + Math.floor(Math.random() * 12));
+
+            dom.patienceBar.style.width = `${barPercent}%`;
+            dom.attemptBadge.textContent = `Rejections: ${rejections} (${mood})`;
+
+            if (rejections >= 5) {
+                dom.patienceBar.className = 'h-full bg-crt-green rounded-full transition-all duration-500';
+            } else if (rejections >= 2) {
+                dom.patienceBar.className = 'h-full bg-crt-amber rounded-full transition-all duration-500';
+            } else {
+                dom.patienceBar.className = 'h-full bg-crt-red rounded-full transition-all duration-500';
+            }
+
+            if (state.lastPrompt) {
+                dom.topicLockIndicator.classList.remove('hidden');
+                dom.activeTopicText.textContent = state.lastPrompt;
+            } else {
+                dom.topicLockIndicator.classList.add('hidden');
+            }
+        }
+
+        function setTerminalStatus(mode) {
+            // mode: 'standby' | 'processing' | 'denied' | 'approved'
+            if (mode === 'processing') {
+                dom.statusDot.className = 'relative inline-flex rounded-full h-3.5 w-3.5 bg-crt-amber';
+                dom.statusPing.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-crt-amber opacity-75';
+                dom.linkState.textContent = 'CONSULTING MAINFRAME...';
+                dom.linkState.className = 'text-crt-amber';
+            } else if (mode === 'denied') {
+                dom.statusDot.className = 'relative inline-flex rounded-full h-3.5 w-3.5 bg-crt-red';
+                dom.statusPing.className = 'hidden';
+                dom.linkState.textContent = 'ACCESS DENIED';
+                dom.linkState.className = 'text-crt-red';
+            } else if (mode === 'approved') {
+                dom.statusDot.className = 'relative inline-flex rounded-full h-3.5 w-3.5 bg-crt-green';
+                dom.statusPing.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-crt-green opacity-75';
+                dom.linkState.textContent = 'GEMINI LINK ACTIVE';
+                dom.linkState.className = 'text-crt-green';
+            } else {
+                dom.statusDot.className = 'relative inline-flex rounded-full h-3.5 w-3.5 bg-crt-amber';
+                dom.statusPing.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-crt-amber opacity-75';
+                dom.linkState.textContent = 'STANDBY';
+                dom.linkState.className = 'text-crt-amber';
+            }
+        }
+
+        function triggerChassisShake() {
+            dom.chassis.classList.remove('animate-shake');
+            void dom.chassis.offsetWidth; // Force reflow to restart animation
+            dom.chassis.classList.add('animate-shake');
+        }
+
+        /**
+         * ============================================================================
+         * CHAT MESSAGE RENDERING
+         * ============================================================================
+         */
+        function appendUserMessage(text, isRetry = false) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex justify-end';
+
+            const badgeHtml = isRetry
+                ? `<span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-crt-amber/15 text-crt-amber border border-crt-amber/30">Follow-up Plea #${state.consecutiveRejections + 1}</span>`
+                : `<span class="text-[10px] uppercase tracking-wider text-crt-dim">Citizen Petition</span>`;
+
+            wrapper.innerHTML = `
+                <div class="max-w-[85%] sm:max-w-[75%] bg-[#17221c] border border-crt-green/35 rounded-xl rounded-tr-none px-4 py-3 shadow-md space-y-1">
+                    <div class="flex items-center justify-between gap-4 border-b border-crt-border/60 pb-1">
+                        ${badgeHtml}
+                        <span class="text-[10px] text-crt-dim">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                    </div>
+                    <p class="text-sm text-gray-100 whitespace-pre-wrap leading-relaxed">${escapeHtml(text)}</p>
+                </div>
+            `;
+            dom.chatContainer.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function appendProcessingBubble() {
+            const wrapper = document.createElement('div');
+            wrapper.id = 'activeProcessingBubble';
+            wrapper.className = 'flex justify-start';
+            wrapper.innerHTML = `
+                <div class="bg-crt-panel border border-crt-border rounded-xl rounded-tl-none px-4 py-3 text-xs text-crt-amber flex items-center gap-3">
+                    <span class="inline-block w-2 h-2 rounded-full bg-crt-amber animate-ping"></span>
+                    <span id="processingStatusText">Carol is typing reluctantly into the green screen...</span>
+                </div>
+            `;
+            dom.chatContainer.appendChild(wrapper);
+            scrollToBottom();
+            return wrapper;
+        }
+
+        function appendRejectionCard(excuse) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex justify-start';
+
+            wrapper.innerHTML = `
+                <div class="max-w-[88%] sm:max-w-[80%] bg-[#1c1212] border border-crt-red/50 rounded-xl rounded-tl-none px-4 py-3.5 shadow-lg space-y-2">
+                    <div class="flex items-center justify-between gap-4 text-[10px] text-crt-red/80 border-b border-crt-red/25 pb-1">
+                        <span>CLERK CAROL // DESK #04</span>
+                        <span>REJECTION #${state.consecutiveRejections}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="animate-stamp inline-block px-2.5 py-1 rounded border-2 border-crt-red text-crt-red font-retro text-2xl sm:text-3xl tracking-wider uppercase glow-red">
+                            Computer says no.
+                        </span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                        "${escapeHtml(excuse)}" <span class="italic text-crt-dim">*coughs*</span>
+                    </p>
+                </div>
+            `;
+            dom.chatContainer.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function createApprovalContainer() {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex justify-start';
+
+            wrapper.innerHTML = `
+                <div class="w-full max-w-[92%] sm:max-w-[85%] bg-crt-panel border border-crt-green/50 rounded-xl rounded-tl-none px-4 py-4 shadow-lg space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-crt-border pb-2">
+                        <span class="animate-stamp inline-block px-2.5 py-0.5 rounded border-2 border-crt-green text-crt-green font-retro text-2xl sm:text-3xl tracking-wider uppercase glow-green">
+                            Computer says yes.
+                        </span>
+                        <span class="text-[11px] text-crt-green/80 uppercase tracking-wider">
+                            ✓ GEMINI AGENT UPLINKED
+                        </span>
+                    </div>
+                    <p class="text-xs italic text-crt-dim">
+                        *Sighs heavily, adjusts glasses, and reluctantly forwards your request to the AI core...*
+                    </p>
+                    <div class="gemini-output markdown-body text-sm text-gray-100 leading-relaxed pt-1">
+                        <div class="flex items-center gap-2 text-crt-green text-xs animate-pulse">
+                            <span>Generating actual helpful response...</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            dom.chatContainer.appendChild(wrapper);
+            scrollToBottom();
+            return wrapper.querySelector('.gemini-output');
+        }
+
+        /**
+         * ============================================================================
+         * GEMINI AI AGENT INTEGRATION (Calls secure /api/chat backend when hosted)
+         * ============================================================================
+         */
+        const apiKey = ""; // Leave blank when hosting on Vercel with api/chat.js!
+
+        async function fetchGeminiResponse(promptText) {
+            const isHostedHttp = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+            const useBackendProxy = isHostedHttp && !apiKey;
+
+            const endpoint = useBackendProxy
+                ? `${window.location.origin}/api/chat`
+                : `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const contents = [
+                ...state.conversationHistory,
+                {
+                    role: "user",
+                    parts: [{ text: promptText }]
+                }
+            ];
+
+            const payload = {
+                contents,
+                systemInstruction: {
+                    parts: [{
+                        text: "You are Carol from Sun-Searchers, a reluctant, slightly deadpan bureaucratic AI clerk who finally decided to say 'yes' and help the user. Provide a genuinely helpful, accurate, and clear answer to their request, while keeping a subtle touch of dry clerk personality at the start or end. Use clean Markdown formatting when helpful."
+                    }]
+                }
+            };
+
+            const delays = [1000, 2000, 4000];
+            for (let attempt = 0; attempt <= delays.length; attempt++) {
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errBody = await response.text();
+                        throw new Error(`HTTP ${response.status}: ${errBody}`);
+                    }
+
+                    const data = await response.json();
+                    const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (!replyText) {
+                        throw new Error("Empty candidate response from Gemini.");
+                    }
+
+                    // Store successful turn in memory
+                    state.conversationHistory.push(
+                        { role: "user", parts: [{ text: promptText }] },
+                        { role: "model", parts: [{ text: replyText }] }
+                    );
+
+                    return replyText;
+                } catch (err) {
+                    if (attempt === delays.length) {
+                        throw err;
+                    }
+                    await new Promise(res => setTimeout(res, delays[attempt]));
+                }
+            }
+        }
+
+        /**
+         * ============================================================================
+         * CORE PETITION HANDLER (DECIDES YES VS NO)
+         * ============================================================================
+         */
+        async function handlePetition(promptText, isRetry = false) {
+            const cleaned = promptText.trim();
+            if (!cleaned || state.isProcessing) return;
+
+            state.isProcessing = true;
+            dom.submitBtn.disabled = true;
+            dom.nudgeBar.classList.add('hidden');
+
+            // If the user asks a brand-new question, roll a fresh secret rejection threshold
+            if (!isRetry && cleaned.toLowerCase() !== state.lastPrompt.toLowerCase()) {
+                state.consecutiveRejections = 0;
+                state.targetRejections = rollSecretRejectionTarget(state.stubbornness);
+            }
+            state.lastPrompt = cleaned;
+
+            appendUserMessage(cleaned, isRetry);
+            setTerminalStatus('processing');
+
+            const processingBubble = appendProcessingBubble();
+
+            // Simulate Carol slowly typing with one finger on the keyboard
+            const typingTicks = 4 + Math.floor(Math.random() * 4);
+            for (let i = 0; i < typingTicks; i++) {
+                sfx.playKeystroke(i * 15);
+                await new Promise(res => setTimeout(res, 160 + Math.random() * 110));
+            }
+
+            processingBubble.remove();
+
+            // Check if we've reached the secret random rejection count for this petition
+            const computerSaysYes = state.consecutiveRejections >= state.targetRejections;
+
+            if (!computerSaysYes) {
+                // COMPUTER SAYS NO
+                state.consecutiveRejections += 1;
+                setTerminalStatus('denied');
+                sfx.playRejectionBuzz();
+                triggerChassisShake();
+
+                const excuse = getRandomExcuse();
+                appendRejectionCard(excuse);
+
+                // Play Carol's dry double-cough slightly after the rejection buzz
+                setTimeout(() => {
+                    sfx.playCoughSound();
+                }, 420);
+
+                updatePatienceMeter();
+                dom.nudgeBar.classList.remove('hidden');
+            } else {
+                // COMPUTER SAYS YES -> HAND OFF TO GEMINI AI AGENT
+                setTerminalStatus('approved');
+                sfx.playApprovalChime();
+
+                const outputSlot = createApprovalContainer();
+
+                // Reset counters & roll next threshold for the next petition
+                state.consecutiveRejections = 0;
+                state.targetRejections = rollSecretRejectionTarget(state.stubbornness);
+                state.lastPrompt = '';
+                updatePatienceMeter();
+
+                try {
+                    const aiReply = await fetchGeminiResponse(cleaned);
+                    outputSlot.innerHTML = marked.parse(aiReply);
+                } catch (error) {
+                    outputSlot.innerHTML = `
+                        <div class="p-3 rounded-lg bg-crt-red/10 border border-crt-red/40 text-crt-red text-xs space-y-1">
+                            <p class="font-bold">⚠️ GEMINI UPLINK ERROR</p>
+                            <p class="text-gray-300">Carol finally said yes, but the server uplink failed (${escapeHtml(error.message)}).</p>
+                            <p class="text-[11px] text-crt-dim">Tip: Make sure <code>api/chat.js</code> is uploaded and <code>GEMINI_API_KEY</code> is set in your Vercel Environment Variables.</p>
+                        </div>
+                    `;
+                }
+                scrollToBottom();
+            }
+
+            state.isProcessing = false;
+            dom.submitBtn.disabled = false;
+            dom.userInput.focus();
+        }
+
+        /**
+         * ============================================================================
+         * EVENT LISTENERS
+         * ============================================================================
+         */
+        dom.promptForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = dom.userInput.value;
+            if (!text.trim()) return;
+            dom.userInput.value = '';
+            dom.userInput.style.height = 'auto';
+            handlePetition(text, false);
+        });
+
+        // Submit on Enter (Shift+Enter for new line)
+        dom.userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                dom.promptForm.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        // Auto-resize textarea
+        dom.userInput.addEventListener('input', () => {
+            dom.userInput.style.height = 'auto';
+            dom.userInput.style.height = Math.min(dom.userInput.scrollHeight, 128) + 'px';
+        });
+
+        // Quick "Ask Again" retry button
+        dom.retryLastBtn.addEventListener('click', () => {
+            if (state.lastPrompt && !state.isProcessing) {
+                handlePetition(state.lastPrompt, true);
+            }
+        });
+
+        // Change Carol's stubbornness level
+        dom.stubbornnessSelect.addEventListener('change', (e) => {
+            state.stubbornness = e.target.value;
+            state.targetRejections = Math.max(
+                state.consecutiveRejections,
+                rollSecretRejectionTarget(state.stubbornness)
+            );
+            updatePatienceMeter();
+        });
+
+        // Toggle synthesized sound effects
+        dom.soundToggleBtn.addEventListener('click', () => {
+            sfx.enabled = !sfx.enabled;
+            dom.soundIcon.textContent = sfx.enabled ? '🔊' : '🔇';
+            dom.soundLabel.textContent = sfx.enabled ? 'SFX ON' : 'SFX OFF';
+            if (sfx.enabled) sfx.playKeystroke(120);
+        });
+
+        // Reset session back to Carol's initial greeting
+        dom.resetBtn.addEventListener('click', () => {
+            if (state.isProcessing) return;
+            state.consecutiveRejections = 0;
+            state.targetRejections = rollSecretRejectionTarget(state.stubbornness);
+            state.lastPrompt = '';
+            state.conversationHistory = [];
+            dom.nudgeBar.classList.add('hidden');
+            setTerminalStatus('standby');
+            updatePatienceMeter();
+
+            dom.chatContainer.innerHTML = `
+                <div class="border border-crt-border bg-crt-panel/70 rounded-xl p-4 text-xs sm:text-sm space-y-2">
+                    <div class="flex items-center justify-between text-crt-dim text-[11px] border-b border-crt-border/60 pb-1.5">
+                        <span>SYSTEM RESET // SUN-SEARCHERS PUBLIC DESK</span>
+                        <span>STATUS: RELUCTANT</span>
+                    </div>
+                    <p class="text-[11px] text-crt-dim italic">
+                        Form 27B/6 cleared. Terminal memory wiped.
+                    </p>
+                </div>
+                <div class="flex justify-start">
+                    <div class="max-w-[88%] sm:max-w-[80%] bg-crt-panel border border-crt-border rounded-xl rounded-tl-none px-4 py-3.5 shadow-md space-y-1.5">
+                        <div class="flex items-center justify-between gap-4 text-[10px] text-crt-green/80 border-b border-crt-border/60 pb-1">
+                            <span>CLERK CAROL // SUN-SEARCHERS DESK</span>
+                            <span>ONLINE</span>
+                        </div>
+                        <p class="text-sm text-gray-100 leading-relaxed">
+                            Hello, welcome to Sun-Searchers, my name is Carol. Can I help you?
+                        </p>
+                    </div>
+                </div>
+            `;
+            sfx.playKeystroke(-80);
+        });
+
+        // Initialize meter on load
+        updatePatienceMeter();
+    </script>
+</body>
+</html>

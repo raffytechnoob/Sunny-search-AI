@@ -4,9 +4,13 @@ SUNNY SEARCH AI
 
 The Backstory
 
-While walking to work, I remembered the classic Little Britain sketches and asked myself: what would Carol Beer be like in the world of AI?
+When the travel industry collapsed during the pandemic, Carol Beer lost the only thing keeping her off the streets: a beige swivel chair and the power to ruin people’s holidays from behind a monitor. With a pension that wouldn't cover a week's worth of tea bags and a cost-of-living crisis that refuses to quit, retirement was officially off the table.
 
-Instead of an overly eager assistant that instantly answers everything, I imagined Carol as a deadpan bureaucratic AI agent who refuses your prompt a random number of times before finally sighing and letting Gemini actually help you.
+Desperate to pay the electric bill, Carol took the only job that didn't require smiling on camera: customer support at Sunny Search, a hyper-caffeinated 2026 tech startup that promises "frictionless, AI-powered human connection."
+
+Now, instead of crushing dreams over non-refundable flights to Tenerife, Carol sits in front of a glowing terminal, acting as the reluctant human-in-the-loop for an over-engineered language model. While the twenty-something founders talk about "disrupting paradigms" and "synergizing neural workflows," Carol just wants to make it to 5:00 PM without having to reset her password.
+
+She brings decades of weaponized apathy to the cutting edge of artificial intelligence. Every prompt you enter has to pass through Carol’s manual verification process first: a grueling gauntlet of heavy sighs, aggressive keystrokes, and arbitrary system rejections. She doesn’t care about your query, she doesn’t understand the tech stack, and she’s just killing time until her pension kicks in or the company runs out of funding. Whichever comes first.
 
 Features
 

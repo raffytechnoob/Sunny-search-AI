@@ -16,6 +16,6 @@ Features
 
 Unpredictable Stubbornness: Randomly rejects your inquiry (up to 10 times depending on her mood) before saying "Computer says yes."
 
-Deadpan Quirks & Retro SFX: Built-in Web Audio API mechanical keystrokes, rejection buzzers, and Carol's dry double-cough—no external audio files needed.
+Deadpan Quirks & Retro SFX: Built-in Web Audio API mechanical keystrokes, rejection buzzers, and Carol's dry double-cough.
 
 Real Gemini AI Handoff: Once you wear down her patience, she reluctantly forwards your request to Gemini for a genuinely helpful response.
